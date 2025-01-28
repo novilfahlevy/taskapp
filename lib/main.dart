@@ -20,36 +20,43 @@ class TaskApp extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Tugas',
-                        hintText: 'Contoh: Lari pagi',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        )
-                      ),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Tugas',
+                  hintText: 'Contoh: Lari pagi',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  )
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Deskripsi',
+                  hintText: 'Contoh: 20 KM',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  )
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(20),
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.all(20),
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text('Tambah'),
-                  )
-                ],
+                  child: const Text('Tambah'),
+                ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 50),
 
               ListTile(
                 title: const Text('Lari pagi'),
