@@ -95,22 +95,24 @@ class _TaskAppState extends State<TaskApp> {
                 const SizedBox(height: 50),
           
                 for (int i = 0; i < tugas.length; i++)
-                  ListTile(
-                    title: Text(tugas[i]['tugas']!),
-                    subtitle: Text(tugas[i]['deskripsi']!),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => hapusTugas(i),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(
-                        color: Colors.blue,
-                        width: 2,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: ListTile(
+                      title: Text(tugas[i]['tugas']!),
+                      subtitle: Text(tugas[i]['deskripsi']!),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => hapusTugas(i),
                       ),
-                      borderRadius: BorderRadius.circular(10),
+                      shape: RoundedRectangleBorder(
+                        side: const BorderSide(
+                          color: Colors.blue,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 10),
               ],
             ),
           ),
