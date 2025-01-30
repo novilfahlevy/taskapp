@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskapp/tugas.dart';
 
 void main() {
   runApp(const TaskApp());
@@ -95,23 +96,11 @@ class _TaskAppState extends State<TaskApp> {
                 const SizedBox(height: 50),
           
                 for (int i = 0; i < tugas.length; i++)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: ListTile(
-                      title: Text(tugas[i]['tugas']!),
-                      subtitle: Text(tugas[i]['deskripsi']!),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => hapusTugas(i),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(
-                          color: Colors.blue,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                  Tugas(
+                    index: i,
+                    tugas: tugas[i]['tugas']!,
+                    deskripsi: tugas[i]['deskripsi']!,
+                    hapusTugas: hapusTugas
                   ),
               ],
             ),
