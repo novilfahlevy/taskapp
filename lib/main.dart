@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:taskapp/tugas.dart';
 
 void main() {
@@ -13,7 +14,11 @@ class TaskApp extends StatefulWidget {
 }
 
 class _TaskAppState extends State<TaskApp> {
-  List<Map<String, String>> tugas = [];
+  List<Map<String, dynamic>> tugas = [];
+
+  bool loading = true;
+
+  bool loadingTambahTugas = false;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -23,16 +28,56 @@ class _TaskAppState extends State<TaskApp> {
 
   void tambahTugas(String tugas, String deskripsi) {
     if (formKey.currentState!.validate()) {
-      setState(() {
-        this.tugas.add({
-          'tugas': tugas,
-          'deskripsi': deskripsi,
-        });
+      setState(() => loadingTambahTugas = true);
+
+      final tugasFuture = Dio().post('https://jsonplaceholder.typicode.com/todos', data: {
+        'title': tugas,
+        'completed': false,
+      });
+      
+      tugasFuture.then((response) {
+        if (response.statusCode == 201) {
+          setState(() {
+            this.tugas.add({
+              'id': response.data['id'],
+              'tugas': tugas,
+              'deskripsi': deskripsi,
+            });
+            loadingTambahTugas = false;
+          });
+        }
       });
     } 
   }
 
   void hapusTugas(int index) => setState(() => tugas.removeAt(index));
+
+  void ambilDataTugas() {
+    final tugasFuture = Dio().get('https://jsonplaceholder.typicode.com/todos');
+
+    tugasFuture.then((response) {
+      setState(() => loading = false);
+
+      if (response.statusCode == 200) {
+        final tugas = response.data;
+        tugas.forEach((tugas) {
+          setState(() {
+            this.tugas.add({
+              'id': tugas['id'],
+              'tugas': tugas['title'],
+              'deskripsi': tugas['completed'] ? 'Selesai' : 'Belum selesai',
+            });
+          });
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    ambilDataTugas();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +90,7 @@ class _TaskAppState extends State<TaskApp> {
         ),
         body: Form(
           key: formKey,
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
@@ -76,11 +121,13 @@ class _TaskAppState extends State<TaskApp> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      tambahTugas(tugasController.text, deskripsiController.text);
-                      tugasController.clear();
-                      deskripsiController.clear();
-                    },
+                    onPressed: loadingTambahTugas
+                      ? null
+                      : () {
+                        tambahTugas(tugasController.text, deskripsiController.text);
+                        tugasController.clear();
+                        deskripsiController.clear();
+                      },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.all(20),
                       backgroundColor: Colors.blue,
@@ -89,22 +136,44 @@ class _TaskAppState extends State<TaskApp> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text('Tambah'),
+                    child: loadingTambahTugas
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text('Tambah Tugas'),
                   ),
                 ),
           
                 const SizedBox(height: 50),
           
-                for (int i = 0; i < tugas.length; i++)
-                  Tugas(
-                    index: i,
-                    tugas: tugas[i]['tugas']!,
-                    deskripsi: tugas[i]['deskripsi']!,
-                    hapusTugas: hapusTugas
-                  ),
-              ],
+                Builder(
+                  builder: (context) {
+                    if (loading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: tugas.length,
+                      itemBuilder: (context, index) {
+                        return Tugas(
+                          index: index,
+                          id: tugas[index]['id']!,
+                          tugas: tugas[index]['tugas']!,
+                          deskripsi: tugas[index]['deskripsi']!,
+                          hapusTugas: hapusTugas
+                        );
+                      },
+                    );
+                  }
+                )
+              ]
             ),
-          ),
+          )
         ),
       ),
     );
